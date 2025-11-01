@@ -117,71 +117,77 @@ class MLIntroSlide(Slide):
 
         trad_title = Text("Traditional Programming", font_size=30, color=BLACK).next_to(title2, DOWN, buff=0.5)
 
-        inp = Text("Input", font_size=28, color=BLUE)
-        rules = Text("Rules", font_size=28, color=BLACK)
-        out = Text("Output", font_size=28, color=GREEN)
+        data = Text("Data", font_size=28, color=BLUE)
+        rules = Text("Rules", font_size=28, color=PURPLE)
+        program = Text("Program", font_size=28, color=BLACK, t2c={"Program": PURPLE})
+        answer = Text("Answer", font_size=28, color=GREEN)
 
-        arrow_length = 1.5
-        arrow1 = Arrow(start=ORIGIN, end=RIGHT * arrow_length, stroke_width=3, color=BLACK)
-        arrow2 = Arrow(start=ORIGIN, end=RIGHT * arrow_length, stroke_width=3, color=BLACK)
+        arrow_data = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
+        arrow_rules = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
+        arrow_output = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
 
-        step1 = VGroup(inp, arrow1).arrange(RIGHT, buff=0.2)
-        step1.align_to(arrow1.get_center(), UP)
+        inputs_group = VGroup(
+            VGroup(data, arrow_data).arrange(RIGHT, buff=0.2),
+            VGroup(rules, arrow_rules).arrange(RIGHT, buff=0.2)
+        ).arrange(DOWN, buff=0.5)
 
-        step2 = VGroup(rules, arrow2).arrange(RIGHT, buff=0.2)
-        step2.align_to(arrow2.get_center(), UP)
+        program_box = Rectangle(width=2.4, height=1, color=BLACK)
+        program_label = Text("Program", font_size=26, color=BLACK)
+        program_group = VGroup(program_box, program_label)
 
-        step3 = out
+        inputs_group.next_to(program_group, LEFT, buff=1)
+        arrow_output.next_to(program_group, RIGHT, buff=0.2)
+        answer.next_to(arrow_output, RIGHT, buff=0.2)
 
-        trad_group = VGroup(step1, step2, step3).arrange(RIGHT, buff=0.8)
+        trad_group = VGroup(inputs_group, program_group, arrow_output, answer).arrange(RIGHT, buff=0.5)
         trad_group.next_to(trad_title, DOWN, buff=0.5)
-        trad_group.align_to(trad_group.get_center(), UP)
 
         ml_title = Text("Machine Learning", font_size=30, color=BLACK).next_to(trad_group, DOWN, buff=1)
 
-        ml_inp = Text("Input", font_size=28, color=BLUE)
-        ml_model = Text("Model", font_size=28, color=PURPLE)
-        ml_out = Text("Output", font_size=28, color=GREEN)
+        ml_data = Text("Data", font_size=28, color=BLUE)
+        ml_answers = Text("Answers", font_size=28, color=GREEN)
+        ml_model_box = Rectangle(width=2.4, height=1, color=BLACK)
+        ml_model_label = Text("Model", font_size=26, color=BLACK)
+        ml_model_group = VGroup(ml_model_box, ml_model_label)
+        ml_rules = Text("Rules", font_size=28, color=PURPLE)
 
-        ml_arrow1 = Arrow(start=ORIGIN, end=RIGHT * arrow_length, stroke_width=3, color=BLACK)
-        ml_arrow2 = Arrow(start=ORIGIN, end=RIGHT * arrow_length, stroke_width=3, color=BLACK)
+        ml_arrow_data = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
+        ml_arrow_answers = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
+        ml_arrow_output = Arrow(start=LEFT, end=RIGHT, stroke_width=3, color=BLACK)
 
-        ml_step1 = VGroup(ml_inp, ml_arrow1).arrange(RIGHT, buff=0.2)
-        ml_step1.align_to(ml_arrow1.get_center(), UP)
+        ml_inputs = VGroup(
+            VGroup(ml_data, ml_arrow_data).arrange(RIGHT, buff=0.2),
+            VGroup(ml_answers, ml_arrow_answers).arrange(RIGHT, buff=0.2)
+        ).arrange(DOWN, buff=0.5)
 
-        ml_step2 = VGroup(ml_model, ml_arrow2).arrange(RIGHT, buff=0.2)
-        ml_step2.align_to(ml_arrow2.get_center(), UP)
+        ml_inputs.next_to(ml_model_group, LEFT, buff=1)
+        ml_arrow_output.next_to(ml_model_group, RIGHT, buff=0.2)
+        ml_rules.next_to(ml_arrow_output, RIGHT, buff=0.2)
 
-        ml_step3 = ml_out
-
-        ml_group = VGroup(ml_step1, ml_step2, ml_step3).arrange(RIGHT, buff=0.8)
+        ml_group = VGroup(ml_inputs, ml_model_group, ml_arrow_output, ml_rules).arrange(RIGHT, buff=0.5)
         ml_group.next_to(ml_title, DOWN, buff=0.5)
-        ml_group.align_to(ml_group.get_center(), UP)
+
         self.play(FadeIn(title2, shift=UP))
         self.next_slide()
 
-        # Traditional Programming step by step
         self.play(Write(trad_title))
         self.next_slide()
-        self.play(FadeIn(inp))
+        self.play(FadeIn(data), FadeIn(rules))
+        self.play(GrowArrow(arrow_data), GrowArrow(arrow_rules))
         self.next_slide()
-        self.play(GrowArrow(arrow1))
-        self.play(FadeIn(rules))
+        self.play(FadeIn(program_group))
         self.next_slide()
-        self.play(GrowArrow(arrow2))
-        self.play(FadeIn(out))
+        self.play(GrowArrow(arrow_output), FadeIn(answer))
         self.next_slide()
 
-        # Machine Learning step by step
         self.play(Write(ml_title))
         self.next_slide()
-        self.play(FadeIn(ml_inp))
+        self.play(FadeIn(ml_data), FadeIn(ml_answers))
+        self.play(GrowArrow(ml_arrow_data), GrowArrow(ml_arrow_answers))
         self.next_slide()
-        self.play(GrowArrow(ml_arrow1))
-        self.play(FadeIn(ml_model))
+        self.play(FadeIn(ml_model_group))
         self.next_slide()
-        self.play(GrowArrow(ml_arrow2))
-        self.play(FadeIn(ml_out))
+        self.play(GrowArrow(ml_arrow_output), FadeIn(ml_rules))
         self.next_slide()
 
         self.play(
