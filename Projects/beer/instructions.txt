@@ -1,0 +1,6 @@
+Download this dataset:
+
+https://www.kaggle.com/datasets/jtrofe/beer-recipes
+
+Predict ABV (alcohol by volume) based on any subset of other columns.
+Try to do the predictions with pytorch, feel free to use other liblaries for loading and preparing data (e.g. pandas)
