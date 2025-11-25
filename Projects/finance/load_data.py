@@ -1,9 +1,9 @@
 # Try to predict opening price for the next day of any publicly traded company you'd like.
-# Here is how you can load the data of nvidia from the past year:
+# Here is how you can load the data of nvidia from the past 10 years:
 
 import yfinance as yf
 
 ticker_symbol = "NVDA"
 ticker = yf.Ticker(ticker_symbol)
-historical_data = ticker.history(period="1y")
-historical_data
+historical_data = ticker.history(period="10y")
+print(len(historical_data))
