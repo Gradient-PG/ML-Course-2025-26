@@ -6,7 +6,7 @@ import numpy as np
 def load_salary_data(csv_path):
     xs = []
     ys = []
-    with open(csv_path, newline='', encoding='utf-8') as f:
+    with open(csv_path) as f:
         reader = csv.DictReader(f)
         for row in reader:
             try:
@@ -19,13 +19,29 @@ def load_salary_data(csv_path):
     return xs, ys
 
 def mse(xs, ys, a, b):
-    error = 1
+    n = len(xs)
+    error = sum(((a*xs[i] + b) - ys[i])** 2 for i in range(n)) / n
     return error
 
-def gradient_descent(xs, ys, lr=0.001, epochs=100):
+def gradient_descent(xs, ys, lr=0.001, epochs=1000):
     a, b = np.random.rand(), np.random.rand()
     n = len(xs)
     history = []
+
+    for epoch in range(epochs):
+        # predictions
+        y_pred = [a*xs[i] + b for i in range(n)]   
+
+        da = (2/n) * sum(((y_pred[i] - ys[i]) * xs[i]) for i in range(n))
+        db = (2/n) * sum(((y_pred[i] - ys[i])) for i in range(n))
+
+        a -= lr * da
+        b -= lr * db
+
+        if epoch % 10 == 0:
+            cost = mse(xs, ys, a, b)
+            history.append(cost)
+
 
     return a, b, history
 
