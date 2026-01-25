@@ -1,0 +1,15 @@
+FROM python:3.13-slim
+
+WORKDIR /src
+
+RUN apt update
+RUN apt upgrade -y
+
+COPY app app
+COPY requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
+EXPOSE 8080
+
+ENTRYPOINT ["uvicorn", "fastapi:app", "--host", "0.0.0.0", "--port", "8080"]

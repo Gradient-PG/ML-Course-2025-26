@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Garment Classifier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f4f4f4;
+    }
+    input[type="file"] {
+      margin-top: 20px;
+    }
+    img {
+      margin-top: 20px;
+      width: 200px;
+      height: auto;
+      border: 1px solid #ccc;
+      display: none;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Garment Image Classifier</h1>
+
+  <input type="file" id="fileInput" accept="image/*"><br>
+  <img id="preview" src="#" alt="Image Preview">
+  <br>
+  <button onclick="uploadImage()">Predict</button>
+
+  <div id="result"></div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const result = document.getElementById('result');
+
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    function uploadImage() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select an image file.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fetch("predict", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        result.innerText = "Prediction: " + data;
+      })
+      .catch(err => {
+        console.error(err);
+        result.innerText = "Error making prediction.";
+      });
+    }
+  </script>
+</body>
+</html>
