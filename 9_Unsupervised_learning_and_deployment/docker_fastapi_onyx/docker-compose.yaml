@@ -8,6 +8,8 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/app:/src/app  # Mount your backend source code
+    networks:
+      - appnet
 
   frontend:
     container_name: frontend
@@ -18,3 +20,9 @@ services:
       - "4173:4173"
     volumes:
       - ./frontend:/src/frontend  # Mount your frontend source code
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge

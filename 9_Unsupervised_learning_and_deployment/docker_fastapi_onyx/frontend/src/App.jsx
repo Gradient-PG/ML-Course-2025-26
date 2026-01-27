@@ -13,7 +13,7 @@ export default function App() {
     formData.append('file', file);
 
     try {
-      const res = await fetch('http://localhost:8080/predict', {
+      const res = await fetch('http://backend:8080/predict', {
         method: 'POST',
         body: formData,
       });
