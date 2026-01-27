@@ -1,11 +1,21 @@
-from fastapi import FastAPI, File, UploadFile
-from typing import Annotated
-from garmet_classifier import GarmentClassifier
+from fastapi import FastAPI, UploadFile
+from .garmet_classifier import GarmentClassifier
 import cv2
 import torch
 import numpy as np
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+model = GarmentClassifier()
+model.load_state_dict(torch.load("app/model_final"))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins (simplest for dev)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -16,6 +26,7 @@ async def root():
 def preprocess(image):
     # min-max scaling
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.resize(image, (28, 28))
     image = torch.from_numpy(image).reshape([1, 28, 28]).to(torch.float32)
     image = (image - image.min()) / (image.max() - image.min())
     image = image * 2 - 1
@@ -33,9 +44,6 @@ async def predict(file: UploadFile):
 
     class_id = int(output.argmax())
 
+    print(f"Predicted class id: {class_id}")
+
     return GarmentClassifier.classes[class_id], 200
-
-
-if __name__ == "__main__":
-    model = GarmentClassifier()
-    model.load_state_dict(torch.load("model_final"))

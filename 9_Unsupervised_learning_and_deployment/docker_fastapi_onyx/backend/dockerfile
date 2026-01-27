@@ -1,15 +1,22 @@
-FROM python:3.13-slim
+FROM pytorch/pytorch:2.10.0-cuda13.0-cudnn9-runtime
 
 WORKDIR /src
 
-RUN apt update
-RUN apt upgrade -y
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    libxcb1 \
+    libgl1
 
 COPY app app
-COPY requirements.txt requirements.txt
+COPY app/requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 EXPOSE 8080
 
-ENTRYPOINT ["uvicorn", "fastapi:app", "--host", "0.0.0.0", "--port", "8080"]
+# Corrected: point to the actual app module, not "fastapi"
+# uvicorn app.main:app --host 0.0.0.0 --port 8080
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

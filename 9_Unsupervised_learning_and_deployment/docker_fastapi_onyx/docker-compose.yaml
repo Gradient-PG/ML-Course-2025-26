@@ -1,0 +1,20 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+    image: backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/app:/src/app  # Mount your backend source code
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    image: frontend
+    ports:
+      - "4173:4173"
+    volumes:
+      - ./frontend:/src/frontend  # Mount your frontend source code
