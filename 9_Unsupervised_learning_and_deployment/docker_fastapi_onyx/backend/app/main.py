@@ -1,17 +1,37 @@
 from fastapi import FastAPI, UploadFile
-from .garmet_classifier import GarmentClassifier
 import cv2
-import torch
 import numpy as np
+import onnxruntime as ort
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-model = GarmentClassifier()
-model.load_state_dict(torch.load("app/model_final"))
+
+try:
+    onnx_session = ort.InferenceSession(
+        "app/model.onnx", providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+    )
+except Exception as e:
+    print(f"CUDA not available or failed to initialize: {e}. Falling back to CPU.")
+    onnx_session = ort.InferenceSession(
+        "app/model.onnx", providers=["CPUExecutionProvider"]
+    )
+
+garmet_classes = (
+    "T-shirt/top",
+    "Trouser",
+    "Pullover",
+    "Dress",
+    "Coat",
+    "Sandal",
+    "Shirt",
+    "Sneaker",
+    "Bag",
+    "Ankle Boot",
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins (simplest for dev)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,11 +45,12 @@ async def root():
 
 def preprocess(image):
     # min-max scaling
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image: np.ndarray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.resize(image, (28, 28))
-    image = torch.from_numpy(image).reshape([1, 28, 28]).to(torch.float32)
+    image = image.astype(np.float32)
     image = (image - image.min()) / (image.max() - image.min())
     image = image * 2 - 1
+    image = image.reshape(1, 28, 28)
     return image
 
 
@@ -40,10 +61,12 @@ async def predict(file: UploadFile):
     image = cv2.imdecode(np_arr, cv2.IMREAD_UNCHANGED)
     image = preprocess(image)
 
-    output: torch.Tensor = model.forward(image)
+    ort_inputs = {onnx_session.get_inputs()[0].name: image}
+    ort_outs = onnx_session.run(None, ort_inputs)
+    output = ort_outs[0]
 
-    class_id = int(output.argmax())
+    class_id = int(np.argmax(output))
 
     print(f"Predicted class id: {class_id}")
 
-    return GarmentClassifier.classes[class_id], 200
+    return garmet_classes[class_id], 200

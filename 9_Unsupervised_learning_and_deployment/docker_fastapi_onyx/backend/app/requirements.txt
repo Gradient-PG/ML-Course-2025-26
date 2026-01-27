@@ -3,3 +3,5 @@ uvicorn
 onnxruntime
 opencv-python
 python-multipart
+onnxruntime
+onnxruntime-gpu

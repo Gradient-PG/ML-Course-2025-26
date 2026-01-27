@@ -10,6 +10,13 @@ services:
       - ./backend/app:/src/app  # Mount your backend source code
     networks:
       - appnet
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              device_ids: ["0"]
 
   frontend:
     container_name: frontend
